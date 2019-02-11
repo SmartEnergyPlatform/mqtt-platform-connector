@@ -54,16 +54,15 @@ func main() {
 		paho.DEBUG = log.New(os.Stdout, "[paho] ", log.LstdFlags)
 	}
 
-	libConf, err := platform_connector_lib.LoadConfig(*configLocation)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	connector := platform_connector_lib.Init(libConf, func(endpoint string, protocolParts map[string]string) (responseParts map[string]string, err error) {
+	connector, err := platform_connector_lib.Init(Config.Config, func(endpoint string, protocolParts map[string]string) (responseParts map[string]string, err error) {
 		responseParts = map[string]string{}
 		err = MqttPublish(endpoint, protocolParts["payload"])
 		return
 	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	defer connector.Stop()
 
